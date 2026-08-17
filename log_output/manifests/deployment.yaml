@@ -14,5 +14,23 @@ spec:
     spec:
       containers:
         - name: hashgenerator
-          image: hash-generator-app:latest
+          image: log-generator:latest
           imagePullPolicy: Never
+          volumeMounts:
+            - name: log-file
+              mountPath: /app/logs
+          env:
+            - name: LOG_PATH
+              value: /app/logs/log.txt
+        - name: log-server
+          image: log-server:latest
+          imagePullPolicy: Never
+          volumeMounts:
+            - name: log-file
+              mountPath: /app/logs
+          env:
+            - name: LOG_PATH
+              value: /app/logs/log.txt
+      volumes:
+        - name: log-file
+          emptyDir: {}
