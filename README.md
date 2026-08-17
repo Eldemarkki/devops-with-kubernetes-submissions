@@ -11,3 +11,4 @@
 - [1.5.](https://github.com/Eldemarkki/devops-with-kubernetes-submissions/tree/1.5/the_project/)
 - [1.6.](https://github.com/Eldemarkki/devops-with-kubernetes-submissions/tree/1.6/the_project/)
 - [1.7.](https://github.com/Eldemarkki/devops-with-kubernetes-submissions/tree/1.6/log_output/)
+- [1.7.](https://github.com/Eldemarkki/devops-with-kubernetes-submissions/tree/1.6/the_project/)
