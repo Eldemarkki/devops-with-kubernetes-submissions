@@ -12,7 +12,8 @@ app.register(fastifyStatic, {
 })
 
 app.listen({
-    port
+    port,
+    host: "0.0.0.0"
 }, () => {
     console.log(`Server started in port ${port}`)
 })
