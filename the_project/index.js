@@ -1,9 +1,15 @@
 import { fastify } from "fastify"
-
-const app = fastify()
+import fastifyStatic from "@fastify/static"
+import path from "node:path"
 
 const port = process.env.PORT
 if (!port) throw new Error("Please specify a port")
+
+const app = fastify()
+
+app.register(fastifyStatic, {
+    root: path.join(import.meta.dirname, "static"),
+})
 
 app.listen({
     port
