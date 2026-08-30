@@ -1,13 +1,21 @@
 import { randomUUID } from "node:crypto"
-import { appendFile } from "node:fs/promises"
+import { writeFileSync } from "node:fs"
 
 const path = process.env.LOG_PATH
 const randomString = randomUUID()
+let running = true
 
-while (true) {
+function shutdown() {
+    running = false
+}
+
+process.once("SIGTERM", () => shutdown())
+process.once("SIGINT", () => shutdown())
+
+while (running) {
     const timestamp = new Date().toISOString()
 
-    appendFile(path, `${timestamp}: ${randomString}\n`)
+    writeFileSync(path, `${timestamp}: ${randomString}`)
 
-    await new Promise(r => setTimeout(r, 5000))
+    await new Promise(resolve => setTimeout(resolve, 5000))
 }
