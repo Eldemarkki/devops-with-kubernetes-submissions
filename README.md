@@ -16,3 +16,4 @@
 - [1.10.](https://github.com/Eldemarkki/devops-with-kubernetes-submissions/tree/1.10/ping-pong-app/)
 - [1.11.](https://github.com/Eldemarkki/devops-with-kubernetes-submissions/tree/1.11/ping-pong-app/)
 - [1.12.](https://github.com/Eldemarkki/devops-with-kubernetes-submissions/tree/1.12/the_project/)
+- [1.13.](https://github.com/Eldemarkki/devops-with-kubernetes-submissions/tree/1.13/the_project/)
