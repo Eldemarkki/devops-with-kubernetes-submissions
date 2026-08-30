@@ -19,3 +19,12 @@ spec:
           env:
             - name: PORT
               value: "3000"
+            - name: IMAGE_CACHE_ROOT
+              value: "/mnt/todo-image-cache"
+          volumeMounts:
+            - mountPath: /mnt/todo-image-cache
+              name: todo-image-cache-vol
+      volumes:
+        - name: todo-image-cache-vol
+          persistentVolumeClaim:
+            claimName: todo-image-cache
