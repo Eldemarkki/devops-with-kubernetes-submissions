@@ -28,16 +28,9 @@ spec:
           volumeMounts:
             - name: log-file
               mountPath: /app/logs
-            - name: pong-file
-              mountPath: /app/pong
           env:
             - name: LOG_PATH
               value: /app/logs/log.txt
-            - name: PONG_PATH
-              value: /app/pong/pong.txt
       volumes:
         - name: log-file
           emptyDir: {}
-        - name: pong-file
-          persistentVolumeClaim:
-            claimName: pong-claim

@@ -25,12 +25,29 @@ let counter = getPongCount()
 console.log("Loaded pong count", counter)
 
 const server = createServer((req, res) => {
-    res.writeHead(200, {
-        "content-type": "text/plain"
-    })
-    counter++
-    writeFileSync(path, counter.toString())
-    res.end(`pong ${counter}`)
+    console.log("REQ URL", req.url)
+    if (req.url === "/pingpong") {
+
+        res.writeHead(200, {
+            "content-type": "text/plain"
+        })
+
+        counter++
+        writeFileSync(path, counter.toString())
+        res.end(`pong ${counter}`)
+        return
+    }
+    else if (req.url === "/pings") {
+        res.writeHead(200, {
+            "content-type": "text/plain"
+        })
+
+        res.end(counter.toString())
+        return
+    }
+
+    res.writeHead(404)
+    res.end()
 })
 
 function shutdown() {

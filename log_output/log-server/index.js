@@ -2,16 +2,14 @@ import { readFileSync } from "node:fs"
 import { createServer } from "node:http"
 
 const path = process.env.LOG_PATH
-const pongPath = process.env.PONG_PATH
 
 const port = process.env.PORT ?? 3000
 
-function getPongCount() {
+async function getPongCount() {
     try {
-        const pongFileContent = readFileSync(pongPath)
-
-        const pongCount = parseInt(pongFileContent.toString(), 10)
-
+        const res = await fetch("http://pingpong-svc:2347/pings")
+        const text = await res.text()
+        const pongCount = parseInt(text, 10)
         return pongCount
     }
     catch {
@@ -19,14 +17,14 @@ function getPongCount() {
     }
 }
 
-const server = createServer((req, res) => {
+const server = createServer(async (req, res) => {
     res.writeHead(200, {
         "content-type": "text/plain"
     })
 
     const fileContent = readFileSync(path)
 
-    const pongCount = getPongCount()
+    const pongCount = await getPongCount()
     res.end(`${fileContent}\nPing / Pongs: ${pongCount}`)
 })
 
