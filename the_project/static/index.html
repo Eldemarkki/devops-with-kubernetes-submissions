@@ -75,21 +75,68 @@
     <main>
         <h1>Todo app</h1>
         <img src="/image" />
-        <form>
-            <input type="text" placeholder="Enter a new task" maxlength="140" required />
+        <form id="todo-form">
+            <input id="todo-input" type="text" placeholder="Enter a new task" maxlength="140" required />
             <button type="submit">
                 Create
             </button>
         </form>
 
         <h2>Todos</h2>
-        <ul>
-            <li>Cook food</li>
-            <li>Wash the dishes</li>
-            <li>Clean the house</li>
+        <ul id="todo-list">
         </ul>
 
     </main>
+    <script>
+        const form = document.querySelector("#todo-form")
+        const input = document.querySelector("#todo-input")
+        const todoList = document.querySelector("#todo-list")
+
+        function appendTodo(todo) {
+            const listItem = document.createElement("li")
+            listItem.textContent = todo.text
+            todoList.append(listItem)
+        }
+
+        async function loadTodos() {
+            const response = await fetch("/todos")
+
+            if (!response.ok) {
+                console.error("Failed to load todos")
+                return
+            }
+
+            const todos = await response.json()
+            todos.forEach(appendTodo)
+        }
+
+        loadTodos()
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault()
+
+            const todo = {
+                id: crypto.randomUUID(),
+                text: input.value,
+            }
+
+            const response = await fetch("/todos", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(todo),
+            })
+
+            if (!response.ok) {
+                console.error("Failed to create todo")
+                return
+            }
+
+            appendTodo(todo)
+            form.reset()
+        })
+    </script>
 </body>
 
 </html>
