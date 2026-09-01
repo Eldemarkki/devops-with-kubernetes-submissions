@@ -1,7 +1,9 @@
 import { readFileSync } from "node:fs"
 import { createServer } from "node:http"
 
-const path = process.env.LOG_PATH
+const logPath = process.env.LOG_PATH
+const configPath = process.env.CONFIG_PATH
+const message = process.env.MESSAGE
 
 const port = process.env.PORT ?? 3000
 
@@ -22,10 +24,18 @@ const server = createServer(async (req, res) => {
         "content-type": "text/plain"
     })
 
-    const fileContent = readFileSync(path)
+    const configFileContent = readFileSync(configPath)
+    const logFileContent = readFileSync(logPath)
 
     const pongCount = await getPongCount()
-    res.end(`${fileContent}\nPing / Pongs: ${pongCount}`)
+    const rows = [
+        `file content: ${configFileContent}`,
+        `env variable: MESSAGE=${message}`,
+        logFileContent,
+        `Ping / Pongs: ${pongCount}`
+    ]
+    
+    res.end(rows.join("\n"))
 })
 
 function shutdown() {

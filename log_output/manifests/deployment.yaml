@@ -29,9 +29,21 @@ spec:
           volumeMounts:
             - name: log-file
               mountPath: /app/logs
+            - name: config-volume
+              mountPath: /app/config
           env:
             - name: LOG_PATH
               value: /app/logs/log.txt
+            - name: CONFIG_PATH
+              value: /app/config/information.txt
+            - name: MESSAGE
+              valueFrom:
+                configMapKeyRef:
+                  name: log-output-config
+                  key: MESSAGE
       volumes:
         - name: log-file
           emptyDir: {}
+        - name: config-volume
+          configMap:
+            name: log-output-config
