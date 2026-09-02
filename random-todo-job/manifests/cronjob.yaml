@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: random-todo-job
+  namespace: project
+spec:
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: random-todo-job
+              image: random-todo-job:latest
+              imagePullPolicy: Never
+              envFrom:
+                - configMapRef:
+                    name: random-todo-job-config
+          restartPolicy: OnFailure
