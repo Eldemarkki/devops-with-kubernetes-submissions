@@ -17,13 +17,6 @@ spec:
         - name: pingpong
           image: pingpong-app:latest
           imagePullPolicy: Never
-          env:
-            - name: PONG_PATH
-              value: /app/pong/pong.txt
-          volumeMounts:
-            - name: pong-file
-              mountPath: /app/pong
-      volumes:
-        - name: pong-file
-          persistentVolumeClaim:
-            claimName: pong-claim
+          envFrom:
+            - configMapRef:
+                name: pingpong-postgres-config
