@@ -1,6 +1,7 @@
 {
   "type": "module",
   "dependencies": {
-    "fastify": "^5.12.1"
+    "fastify": "^5.12.1",
+    "pg": "^8.23.0"
   }
 }

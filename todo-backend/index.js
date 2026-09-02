@@ -1,6 +1,7 @@
 // @ts-check
 
 import { fastify } from "fastify"
+import pg from "pg"
 
 const port = process.env.PORT
 if (!port) throw new Error("Please specify a port")
@@ -8,9 +9,6 @@ if (!port) throw new Error("Please specify a port")
 const app = fastify()
 
 /** @typedef {{ id: string, text: string }} Todo */
-
-/** @type {Todo[]} */
-const todos = []
 
 /**
  * @param {unknown} value
@@ -25,8 +23,29 @@ function isTodo(value) {
         && typeof value.text === "string"
 }
 
+const { Client } = pg
+const client = new Client({
+    host: process.env.POSTGRES_HOST,
+    port: Number(process.env.POSTGRES_PORT),
+    database: process.env.POSTGRES_DB,
+    user: process.env.POSTGRES_USER,
+    password: process.env.POSTGRES_PASSWORD
+})
+
+await client.connect()
+await client.query(`
+    CREATE TABLE IF NOT EXISTS todos (
+        id TEXT PRIMARY KEY,
+        text TEXT NOT NULL
+    )
+`)
+
 app.get("/todos", async (req, res) => {
-    res.send(todos)
+    const result = await client.query(
+        "SELECT id, text FROM todos"
+    )
+
+    return res.send(result.rows)
 })
 
 app.post("/todos", async (req, res) => {
@@ -36,13 +55,18 @@ app.post("/todos", async (req, res) => {
 
     const data = req.body
 
-    todos.push(data)
+    await client.query(
+        "INSERT INTO todos (id, text) VALUES ($1, $2)",
+        [data.id, data.text]
+    )
+
     return res.status(201).send()
 })
 
 async function shutdown() {
     try {
         await app.close()
+        await client.end()
     }
     catch (error) {
         console.error(error)

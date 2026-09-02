@@ -6,3 +6,8 @@ metadata:
 data:
   HOST: "0.0.0.0"
   PORT: "3000"
+  POSTGRES_HOST: todo-app-postgres-svc
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: todoapp
+  POSTGRES_USER: todoapp
+  POSTGRES_PASSWORD: todoapp
