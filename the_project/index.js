@@ -5,13 +5,24 @@ import fastifyStatic from "@fastify/static"
 import { mkdir, readFile, stat, writeFile } from "node:fs/promises"
 import path from "node:path"
 
-const IMAGE_CACHE_TTL_MS = 10 * 60 * 1000 // 10 minutes
-const IMAGE_CACHE_ROOT = process.env.IMAGE_CACHE_ROOT ?? import.meta.dirname
-const IMAGE_CACHE_PATH = path.join(IMAGE_CACHE_ROOT, ".image-cache")
-const IMAGE_CACHE_METADATA_PATH = path.join(IMAGE_CACHE_ROOT, ".image-cache.json")
+const imageCacheTtlMs = process.env.IMAGE_CACHE_TTL_MS
+if (imageCacheTtlMs == null) throw new Error("IMAGE_CACHE_TTL_MS environment variable must be defined")
+const IMAGE_CACHE_TTL_MS = Number(imageCacheTtlMs)
+if (!Number.isFinite(IMAGE_CACHE_TTL_MS) || IMAGE_CACHE_TTL_MS <= 0) {
+    throw new Error("IMAGE_CACHE_TTL_MS environment variable must be a positive number")
+}
+
+const IMAGE_CACHE_ROOT = process.env.IMAGE_CACHE_ROOT
+if (IMAGE_CACHE_ROOT == null) throw new Error("IMAGE_CACHE_ROOT environment variable must be defined")
+
+const IMAGE_URL = process.env.IMAGE_URL
+if (IMAGE_URL == null) throw new Error("IMAGE_URL environment variable must be defined")
 
 const port = process.env.PORT
 if (!port) throw new Error("Please specify a port")
+
+const IMAGE_CACHE_PATH = path.join(IMAGE_CACHE_ROOT, ".image-cache")
+const IMAGE_CACHE_METADATA_PATH = path.join(IMAGE_CACHE_ROOT, ".image-cache.json")
 
 const app = fastify()
 
@@ -50,7 +61,7 @@ await loadCachedImage()
 
 app.get("/image", async (req, res) => {
     if (lastImageFetchTime == null || (Date.now() - lastImageFetchTime) > IMAGE_CACHE_TTL_MS) {
-        const imageResponse = await fetch("https://picsum.photos/1200")
+        const imageResponse = await fetch(IMAGE_URL)
         lastImage = Buffer.from(await imageResponse.arrayBuffer())
         lastImageContentType = imageResponse.headers.get("content-type") ?? "application/octet-stream"
         await Promise.all([
@@ -80,7 +91,7 @@ process.once("SIGINT", () => shutdown())
 
 app.listen({
     port: parseInt(port, 10),
-    host: "0.0.0.0"
+    host: process.env.HOST
 }, () => {
     console.log(`Server started in port ${port}`)
 })

@@ -55,7 +55,7 @@ process.once("SIGINT", () => shutdown())
 
 app.listen({
     port: parseInt(port, 10),
-    host: "0.0.0.0"
+    host: process.env.HOST
 }, () => {
     console.log(`Server started in port ${port}`)
 })

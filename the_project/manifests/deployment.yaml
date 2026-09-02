@@ -17,11 +17,9 @@ spec:
         - name: todo-app
           image: todo-app:latest
           imagePullPolicy: Never
-          env:
-            - name: PORT
-              value: "3000"
-            - name: IMAGE_CACHE_ROOT
-              value: "/mnt/todo-image-cache"
+          envFrom:
+            - configMapRef:
+                name: project-config
           volumeMounts:
             - mountPath: /mnt/todo-image-cache
               name: todo-image-cache-vol

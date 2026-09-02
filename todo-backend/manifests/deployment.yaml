@@ -17,6 +17,6 @@ spec:
         - name: todo-backend
           image: todo-backend:latest
           imagePullPolicy: Never
-          env:
-            - name: PORT
-              value: "3000"
+          envFrom:
+            - configMapRef:
+                name: project-backend-config

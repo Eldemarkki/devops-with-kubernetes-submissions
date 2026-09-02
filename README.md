@@ -25,4 +25,4 @@
 - [2.3.](https://github.com/Eldemarkki/devops-with-kubernetes-submissions/tree/2.3/namespaces/)
 - [2.4.](https://github.com/Eldemarkki/devops-with-kubernetes-submissions/tree/2.4/the_project/)
 - [2.5.](https://github.com/Eldemarkki/devops-with-kubernetes-submissions/tree/2.5/log_output/)
-
+- [2.6.](https://github.com/Eldemarkki/devops-with-kubernetes-submissions/tree/2.6/the_project/)
