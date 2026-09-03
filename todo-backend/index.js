@@ -6,7 +6,17 @@ import pg from "pg"
 const port = process.env.PORT
 if (!port) throw new Error("Please specify a port")
 
-const app = fastify()
+const app = fastify({
+    logger: true
+})
+
+// https://fastify.dev/docs/latest/Reference/Logging/#advanced-logger-configuration
+app.addHook('preHandler', function (req, reply, done) {
+    if (req.body) {
+        req.log.info({ body: req.body }, 'parsed body')
+    }
+    done()
+})
 
 /** @typedef {{ id: string, text: string }} Todo */
 
@@ -54,6 +64,10 @@ app.post("/todos", async (req, res) => {
     }
 
     const data = req.body
+
+    if (data.text.length > 140) {
+        return res.status(400).send({ error: "Text must be 140 characters or less" })
+    }
 
     await client.query(
         "INSERT INTO todos (id, text) VALUES ($1, $2)",
