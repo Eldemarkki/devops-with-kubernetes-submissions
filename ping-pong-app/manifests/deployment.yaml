@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: pingpong
-          image: ghcr.io/eldemarkki/pingpong-app:3.1
+          image: ghcr.io/eldemarkki/pingpong-app:3.2
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:

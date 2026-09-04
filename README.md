@@ -37,3 +37,4 @@
 > I'm doing these exercises with UpCloud Managed Kubernetes instead of Google Kubernetes Engine
 
 - [3.1.](https://github.com/Eldemarkki/devops-with-kubernetes-submissions/tree/3.1/ping-pong-app/)
+- [3.2.](https://github.com/Eldemarkki/devops-with-kubernetes-submissions/tree/3.2/log_output/)

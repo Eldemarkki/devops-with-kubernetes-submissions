@@ -4,6 +4,7 @@ metadata:
   name: hashgenerator-ingress
   namespace: exercises
 spec:
+  ingressClassName: traefik
   rules:
   - http:
       paths:

@@ -15,8 +15,8 @@ spec:
     spec:
       containers:
         - name: hashgenerator
-          image: log-generator:latest
-          imagePullPolicy: Never
+          image: ghcr.io/eldemarkki/log-generator:3.2
+          imagePullPolicy: IfNotPresent
           volumeMounts:
             - name: log-file
               mountPath: /app/logs
@@ -24,8 +24,8 @@ spec:
             - name: LOG_PATH
               value: /app/logs/log.txt
         - name: log-server
-          image: log-server:latest
-          imagePullPolicy: Never
+          image: ghcr.io/eldemarkki/log-server:3.2
+          imagePullPolicy: IfNotPresent
           volumeMounts:
             - name: log-file
               mountPath: /app/logs
