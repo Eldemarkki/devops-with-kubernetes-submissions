@@ -30,3 +30,10 @@
 - [2.8.](https://github.com/Eldemarkki/devops-with-kubernetes-submissions/tree/2.8/todo-backend/)
 - [2.9.](https://github.com/Eldemarkki/devops-with-kubernetes-submissions/tree/2.9-fix/random-todo-job/)
 - [2.10.](https://github.com/Eldemarkki/devops-with-kubernetes-submissions/tree/2.10/todo-backend/)
+
+### Chapter 4
+
+> [!NOTE]
+> I'm doing these exercises with UpCloud Managed Kubernetes instead of Google Kubernetes Engine
+
+- [3.1.](https://github.com/Eldemarkki/devops-with-kubernetes-submissions/tree/3.1/ping-pong-app/)
