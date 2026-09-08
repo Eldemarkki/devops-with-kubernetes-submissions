@@ -51,12 +51,6 @@ console.log("Loaded pong count", counter)
 const server = createServer(async (req, res) => {
     try {
         if (req.url === "/") {
-            res.writeHead(200, { "content-type": "text/plain" })
-            res.end("OK")
-            return
-        }
-
-        if (req.url === "/pingpong") {
             counter = await incrementPongCount()
             res.writeHead(200, { "content-type": "text/plain" })
             res.end(`pong ${counter}`)
