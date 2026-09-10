@@ -11,3 +11,4 @@ data:
   POSTGRES_DB: todoapp
   POSTGRES_USER: todoapp
   POSTGRES_PASSWORD: todoapp
+  PGDATA: /var/lib/postgresql/data/pgdata

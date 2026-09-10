@@ -4,7 +4,7 @@ metadata:
   name: todo-image-cache
   namespace: project
 spec:
-  storageClassName: todo-image-cache-pv
+  storageClassName: upcloud-block-storage-maxiops
   accessModes:
     - ReadWriteOnce
   resources:

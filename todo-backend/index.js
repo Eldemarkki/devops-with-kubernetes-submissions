@@ -2,6 +2,7 @@
 
 import { fastify } from "fastify"
 import pg from "pg"
+import { randomUUID } from "node:crypto"
 
 const port = process.env.PORT
 if (!port) throw new Error("Please specify a port")
@@ -18,7 +19,7 @@ app.addHook('preHandler', function (req, reply, done) {
     done()
 })
 
-/** @typedef {{ id: string, text: string }} Todo */
+/** @typedef {{ text: string }} Todo */
 
 /**
  * @param {unknown} value
@@ -27,8 +28,6 @@ app.addHook('preHandler', function (req, reply, done) {
 function isTodo(value) {
     return typeof value === "object"
         && value !== null
-        && "id" in value
-        && typeof value.id === "string"
         && "text" in value
         && typeof value.text === "string"
 }
@@ -69,9 +68,10 @@ app.post("/todos", async (req, res) => {
         return res.status(400).send({ error: "Text must be 140 characters or less" })
     }
 
+    const id = randomUUID()
     await client.query(
         "INSERT INTO todos (id, text) VALUES ($1, $2)",
-        [data.id, data.text]
+        [id, data.text]
     )
 
     return res.status(201).send()
