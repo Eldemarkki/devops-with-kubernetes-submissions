@@ -15,8 +15,8 @@ spec:
     spec:
       containers:
         - name: todo-backend
-          image: ghcr.io/eldemarkki/todo-backend:3.5-fix1
-          imagePullPolicy: IfNotPresent
+          image: TODO-BACKEND-IMAGE
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: project-backend-config

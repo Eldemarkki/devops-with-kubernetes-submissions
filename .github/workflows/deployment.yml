@@ -1,0 +1,95 @@
+name: Build and push images
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  UPCLOUD_KUBERNETES_SERVER: https://lb-0a7084761dfd405abdd857102a4808db-1.upcloudlb.com:7443
+
+jobs:
+  build:
+    name: Build ${{ matrix.image }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    strategy:
+      matrix:
+        include:
+          - context: the_project
+            image: todo-frontend
+          - context: todo-backend
+            image: todo-backend
+          - context: random-todo-job
+            image: random-todo-job
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - uses: docker/login-action@v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v7.3.0
+        with:
+          context: ./${{ matrix.context }}
+          platforms: linux/amd64
+          push: true
+          tags: ghcr.io/eldemarkki/${{ matrix.image }}:${{ github.sha }}
+
+  deploy:
+    name: Deploy to UpCloud
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - name: Configure Kubernetes access
+        run: |-
+          OIDC_TOKEN="$(
+            curl -fsSL \
+              -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+              "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=https%3A%2F%2Fgithub.com%2Feldemarkki" \
+              | jq -er '.value'
+          )"
+          echo "::add-mask::$OIDC_TOKEN"
+
+          KUBECONFIG_PATH="$RUNNER_TEMP/upcloud-kubeconfig.yaml"
+          kubectl config set-cluster upcloud \
+            --kubeconfig="$KUBECONFIG_PATH" \
+            --server="$UPCLOUD_KUBERNETES_SERVER" \
+            --certificate-authority="$GITHUB_WORKSPACE/.github/upcloud-ca.crt" \
+            --embed-certs=true
+          kubectl config set-credentials github-actions \
+            --kubeconfig="$KUBECONFIG_PATH" \
+            --token="$OIDC_TOKEN"
+          kubectl config set-context upcloud \
+            --kubeconfig="$KUBECONFIG_PATH" \
+            --cluster=upcloud \
+            --user=github-actions \
+            --namespace=project
+          kubectl config use-context upcloud --kubeconfig="$KUBECONFIG_PATH"
+          echo "KUBECONFIG=$KUBECONFIG_PATH" >> "$GITHUB_ENV"
+
+      - name: Set up Kustomize
+        run: |-
+          curl -sfL https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v5.8.1/kustomize_v5.8.1_linux_amd64.tar.gz | tar -xz
+
+      - name: Deploy
+        run: |-
+          ./kustomize edit set image \
+            TODO-FRONTEND-IMAGE=ghcr.io/eldemarkki/todo-frontend:$GITHUB_SHA \
+            TODO-BACKEND-IMAGE=ghcr.io/eldemarkki/todo-backend:$GITHUB_SHA \
+            RANDOM-TODO-JOB-IMAGE=ghcr.io/eldemarkki/random-todo-job:$GITHUB_SHA
+          ./kustomize build . | kubectl apply -f -
+          kubectl rollout status deployment/todo-app-dep
+          kubectl rollout status deployment/todo-backend-dep
+          kubectl get services -o wide

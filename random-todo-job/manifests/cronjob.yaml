@@ -11,8 +11,8 @@ spec:
         spec:
           containers:
             - name: random-todo-job
-              image: ghcr.io/eldemarkki/random-todo-job:3.5
-              imagePullPolicy: IfNotPresent
+              image: RANDOM-TODO-JOB-IMAGE
+              imagePullPolicy: Always
               envFrom:
                 - configMapRef:
                     name: random-todo-job-config

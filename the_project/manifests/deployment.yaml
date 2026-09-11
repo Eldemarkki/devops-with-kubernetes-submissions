@@ -8,6 +8,8 @@ spec:
   selector:
     matchLabels:
       app: todo-app
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
@@ -15,8 +17,8 @@ spec:
     spec:
       containers:
         - name: todo-app
-          image: ghcr.io/eldemarkki/todo-frontend:3.5-fix1
-          imagePullPolicy: IfNotPresent
+          image: TODO-FRONTEND-IMAGE
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: project-config
