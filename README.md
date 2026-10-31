@@ -42,3 +42,4 @@
 - [3.4.](https://github.com/Eldemarkki/devops-with-kubernetes-submissions/tree/3.4/log_output/)
 - [3.5.](https://github.com/Eldemarkki/devops-with-kubernetes-submissions/tree/3.5/)
 - [3.6.](https://github.com/Eldemarkki/devops-with-kubernetes-submissions/tree/3.6/)
+- [3.7.](https://github.com/Eldemarkki/devops-with-kubernetes-submissions/tree/3.7/)
