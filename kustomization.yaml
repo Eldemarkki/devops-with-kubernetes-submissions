@@ -8,7 +8,6 @@ images:
   - name: RANDOM-TODO-JOB-IMAGE
     newName: ghcr.io/eldemarkki/random-todo-job
 resources:
-  - the_project/manifests/namespace.yaml
   - the_project/manifests/configmap.yaml
   - the_project/manifests/persistentvolumeclaim.yaml
   - the_project/manifests/deployment.yaml
