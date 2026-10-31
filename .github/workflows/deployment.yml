@@ -2,6 +2,8 @@ name: Build and push images
 
 on:
   push:
+    branches:
+      - "**"
   workflow_dispatch:
 
 env:
@@ -44,6 +46,7 @@ jobs:
   deploy:
     name: Deploy to UpCloud
     runs-on: ubuntu-latest
+    if: github.ref_type == 'branch'
     needs: build
     env:
       TARGET_NAMESPACE: ${{ github.ref_name == 'main' && 'project' || github.ref_name }}
