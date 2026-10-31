@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - "**"
+  delete:
   workflow_dispatch:
 
 env:
@@ -99,3 +100,45 @@ jobs:
           kubectl rollout status deployment/todo-app-dep
           kubectl rollout status deployment/todo-backend-dep
           kubectl get services -o wide
+
+  cleanup:
+    name: Delete branch environment
+    runs-on: ubuntu-latest
+    if: github.event_name == 'delete' && github.event.ref_type == 'branch' && github.event.ref != 'main'
+    env:
+      TARGET_NAMESPACE: ${{ github.event.ref }}
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - name: Configure Kubernetes access
+        run: |-
+          OIDC_TOKEN="$(
+            curl -fsSL \
+              -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+              "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=https%3A%2F%2Fgithub.com%2Feldemarkki" \
+              | jq -er '.value'
+          )"
+          echo "::add-mask::$OIDC_TOKEN"
+
+          KUBECONFIG_PATH="$RUNNER_TEMP/upcloud-kubeconfig.yaml"
+          kubectl config set-cluster upcloud \
+            --kubeconfig="$KUBECONFIG_PATH" \
+            --server="$UPCLOUD_KUBERNETES_SERVER" \
+            --certificate-authority="$GITHUB_WORKSPACE/.github/upcloud-ca.crt" \
+            --embed-certs=true
+          kubectl config set-credentials github-actions \
+            --kubeconfig="$KUBECONFIG_PATH" \
+            --token="$OIDC_TOKEN"
+          kubectl config set-context upcloud \
+            --kubeconfig="$KUBECONFIG_PATH" \
+            --cluster=upcloud \
+            --user=github-actions \
+            --namespace="$TARGET_NAMESPACE"
+          kubectl config use-context upcloud --kubeconfig="$KUBECONFIG_PATH"
+          echo "KUBECONFIG=$KUBECONFIG_PATH" >> "$GITHUB_ENV"
+
+      - name: Delete namespace
+        run: kubectl delete namespace "$TARGET_NAMESPACE" --ignore-not-found=true
