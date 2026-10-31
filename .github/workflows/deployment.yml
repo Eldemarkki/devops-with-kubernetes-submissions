@@ -140,5 +140,12 @@ jobs:
           kubectl config use-context upcloud --kubeconfig="$KUBECONFIG_PATH"
           echo "KUBECONFIG=$KUBECONFIG_PATH" >> "$GITHUB_ENV"
 
-      - name: Delete namespace
-        run: kubectl delete namespace "$TARGET_NAMESPACE" --ignore-not-found=true
+      - name: Delete namespace and persistent volumes
+        run: |-
+          for pvc in $(kubectl get pvc --namespace="$TARGET_NAMESPACE" -o name); do
+            pv=$(kubectl get "$pvc" --namespace="$TARGET_NAMESPACE" -o jsonpath='{.spec.volumeName}')
+            if [ -n "$pv" ]; then
+              kubectl patch "$pv" --type=merge -p '{"spec":{"persistentVolumeReclaimPolicy":"Delete"}}'
+            fi
+          done
+          kubectl delete namespace "$TARGET_NAMESPACE" --ignore-not-found=true
